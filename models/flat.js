@@ -10,6 +10,7 @@ const flatSchema = new Schema({
     price: Number,
     roomsAvailable: Number,
     location: String,
+    description:String,
     flatmates:{ 
         type: [Schema.Types.ObjectId], 
         ref: 'User' 
