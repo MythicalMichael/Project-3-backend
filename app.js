@@ -8,12 +8,15 @@ const session = require("express-session");
 const MongoStore = require("connect-mongo")(session);
 const cors = require("cors");
 
+const response = require("./helpers/response");
+const configurePassport = require("./helpers/passport");
 const User = require("./models/user");
 const Flat = require("./models/flat");
 
 const index = require("./routes/index");
 const flats = require("./routes/flats");
 const users = require("./routes/user");
+const auth = require("./routes/auth");
 
 const app = express();
 
@@ -24,33 +27,6 @@ mongoose.connect("mongodb://localhost/Project3-DB", {
   keepAlive: true,
   reconnectTries: Number.MAX_VALUE,
   useMongoClient: true
-});
-
-// -- MIDDLEWARES
-
-app.use(logger("dev"));
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: false }));
-app.use(cookieParser());
-app.use(express.static("public"));
-
-// const corsOptions = {
-//   origin: ["http://localhost:4200"],
-//   credentials: true
-// };
-// app.use(cors(corsOptions));
-
-//create a cors middleware
-app.use(function(req, res, next) {
-  //set headers to allow cross origin request.
-  res.header("Access-Control-Allow-Origin", "http://localhost:4200");
-  res.header("Access-Control-Allow-Methods", "PUT, GET, POST, DELETE, OPTIONS");
-  res.header(
-    "Access-Control-Allow-Headers",
-    "Origin, X-Requested-With, Content-Type, Accept"
-  );
-  res.header("Access-Control-Allow-Credentials", true);
-  next();
 });
 
 // -- SESSION
@@ -70,11 +46,37 @@ app.use(
   })
 );
 
+const passport = configurePassport();
+app.use(passport.initialize());
+app.use(passport.session());
+
+// -- MIDDLEWARES
+
+app.use(logger("dev"));
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(cookieParser());
+app.use(express.static("public"));
+
+//create a cors middleware
+app.use(function(req, res, next) {
+  //set headers to allow cross origin request.
+  res.header("Access-Control-Allow-Origin", "http://localhost:4200");
+  res.header("Access-Control-Allow-Methods", "PUT, GET, POST, DELETE, OPTIONS");
+  res.header(
+    "Access-Control-Allow-Headers",
+    "Origin, X-Requested-With, Content-Type, Accept"
+  );
+  res.header("Access-Control-Allow-Credentials", true);
+  next();
+});
+
 // -- ROUTES
 
 app.use("/", index);
 app.use("/flat", flats);
 app.use("/user", users);
+app.use("/auth", auth);
 
 // -- ERRORS
 
