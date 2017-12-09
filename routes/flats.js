@@ -22,20 +22,6 @@ router.get("/:id", (req, res, next) => {
     res.json(data);
   });
 });
-//Add a flat0
-// router.post("/add", (req, res, next) => {
-//   const flatname = req.body.flatname;
-//   const rooms = req.body.rooms;
-//   const price = req.body.price;
-
-//   const newFlat = new Flat({
-//     flatname,
-//     rooms,
-//     price
-//   });
-
-//   newFlat.save((err => {res.json('/');})
-// });
 
 router.post("/add", (req, res, next) => {
   console.log("body", req.body);
