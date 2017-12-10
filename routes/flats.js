@@ -2,6 +2,8 @@ const express = require("express");
 const router = express.Router();
 const Flat = require("../models/flat");
 const upload = require("../configs/multer");
+const User = require("../models/user");
+
 /* GET home page. */
 router.get("/", (req, res, next) => {
   Flat.find({}, (err, data) => {
@@ -11,27 +13,45 @@ router.get("/", (req, res, next) => {
     res.json(data);
   });
 });
-
+/////////
 router.get("/:id", (req, res, next) => {
   const flatid = req.params.id;
-  Flat.findOne({ _id: `${flatid}` }, (err, data) => {
-    if (err) {
-      return next(err);
-      console.log(flatid);
-    }
-    res.json(data);
-  });
+  Flat.findOne({ _id: `${flatid}` })
+    .populate({
+      path: "author",
+      model: "User"
+    })
+    .exec((err, data) => {
+      if (err) {
+        next(err);
+      } else {
+        res.json(data);
+      }
+    });
 });
+
+///////// this is working in case of fuck up of population
+// router.get("/:id", (req, res, next) => {
+//   const flatid = req.params.id;
+//   Flat.findOne({ _id: `${flatid}` }, (err, data) => {
+//     if (err) {
+//       return next(err);
+//       console.log(flatid);
+//     }
+//     res.json(data);
+//   });
+// });
 
 router.post("/add", (req, res, next) => {
   console.log("body", req.body);
   console.log("file", req.file);
-
+  ////////
   const newFlat = new Flat({
     flatname: req.body.flatname,
     rooms: req.body.rooms,
     price: req.body.price,
-    mainPicture: req.body.filename
+    mainPicture: req.body.filename,
+    author: req.user
   });
 
   newFlat.save(err => {
