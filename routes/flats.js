@@ -1,7 +1,11 @@
 const express = require("express");
+const passport = require("passport");
 const router = express.Router();
+const bcrypt = require("bcrypt");
+const response = require("../helpers/response");
 const Flat = require("../models/flat");
 const upload = require("../configs/multer");
+
 const User = require("../models/user");
 
 /* GET home page. */
@@ -30,22 +34,23 @@ router.get("/:id", (req, res, next) => {
     });
 });
 
-///////// this is working in case of fuck up of population
-// router.get("/:id", (req, res, next) => {
-//   const flatid = req.params.id;
-//   Flat.findOne({ _id: `${flatid}` }, (err, data) => {
-//     if (err) {
-//       return next(err);
-//       console.log(flatid);
-//     }
-//     res.json(data);
-//   });
-// });
+router.post("/:id/flatmates", (req, res, next) => {
+  const flatid = req.params.id;
+  // findOneAndUpdate or just findOne
+  Flat.findByIdAndUpdate(
+    { _id: flatid },
+    { $push: { flatmates: { user: req.user._id, message: req.body.message } } },
+    (err, data) => {
+      if (err) {
+        return next(err);
+      }
+      console.log("hello from backend", data);
+      res.json(data);
+    }
+  );
+});
 
 router.post("/add", (req, res, next) => {
-  console.log("body", req.body);
-  console.log("file", req.file);
-  ////////
   const newFlat = new Flat({
     flatname: req.body.flatname,
     rooms: req.body.rooms,

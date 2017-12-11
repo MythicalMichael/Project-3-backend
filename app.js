@@ -75,7 +75,7 @@ app.use(function(req, res, next) {
 
 app.use("/", index);
 app.use("/flat", flats);
-app.use("/user", users);
+app.use("/users", users);
 app.use("/auth", auth);
 
 // -- ERRORS

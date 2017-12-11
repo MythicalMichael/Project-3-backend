@@ -14,10 +14,25 @@ const flatSchema = new Schema(
     rooms: Number,
     location: String,
     description: String,
-    flatmates: {
-      type: [Schema.Types.ObjectId],
-      ref: "User"
-    }
+    flatmates: [
+      {
+        date: {
+          type: Date,
+          default: Date.now
+        },
+        user: {
+          type: Schema.Types.ObjectId,
+          ref: "User"
+        },
+        status: {
+          type: String,
+          deafault: "pending",
+          enum: ["pending", "accepted", "rejected"]
+        },
+        message: String,
+        reply: String
+      }
+    ]
   },
   {
     timestamps: { createdAt: "created_at", updatedAt: "updated_at" }
