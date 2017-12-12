@@ -53,3 +53,64 @@ you can access authors profile by clicking on him
 
 ##Flat logic
 there is should be expiring date on flats so and they should also disappear if flatmates array full \*only be visible for you at the top of the page if you are flatmate
+
+in page-flat-id html
+
+<h3>Flatmates</h3>
+<ul>
+  <li *ngFor="let flatmate of flat.flatmates">
+    <app-flat-flatmate [flat]="flat" [flatmate]="flatmate">
+  </li>
+</ul>
+
+in FlatFlatmatesComponent.ts
+
+@Input() flat; // with flat.\_id
+@Input() flatmate; // flatmate.user (the id of the requester) AND flatmate.status
+canReply: boolean;
+isReplied: boolean;
+isPublic: boolean;
+
+constructor(private authService: AuthService)
+
+ngOnInt() {
+this.user = this.authService.getUser();
+this.isPublic = this.flatmate.status !== "pending" || this.flat.author === this.user.\_id; // @todo or you are flatmate
+this.canReply = (this.flatmate.status === "pending" && this.flat.author === this.user.\_id);
+this.isReplied = (this.flatmate.status !== "pending" && this.flat.author === this.user.\_id);
+}
+
+handleConfirmClick()
+this.flatService.postAcceptRequest(flat.\_id, flatmate.user, this.reply) //
+
+handleRejectClick()
+...
+
+in FlatFlatmatesComponent.html
+
+<div *ngIf="isPublic" class="pending">
+  request pending
+</div>
+<div *ngIf="isPublic">
+  <p>Request from {{flatmate.user.name}}</p>
+  <p>Date {{flatmate.date}}</p>
+  <p>Message {{flatmate.message}}</p>
+  <div *ngIf="canReply">
+    <textarea [(ngModel)]="reply"></textarea>
+    <button >Accept</button>
+    <button>Reject</button>
+  </div>
+  <p *ngIf="isReplied">{{flatmate.reply}}</p>
+
+</div>
+
+in flats.service.ts
+
+postAcceptRequest(flatid, userid, reply): Observable<any> {
+// console.log("hello from the other side");
+const options = new RequestOptions();
+options.withCredentials = true;
+return this.http
+.put(baseUrl + "/flat/" + flatid + "/flatmates/" + userid, { message }, options)
+.map((res: Response) => res.json());
+}

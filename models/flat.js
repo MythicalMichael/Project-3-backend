@@ -26,7 +26,7 @@ const flatSchema = new Schema(
         },
         status: {
           type: String,
-          deafault: "pending",
+          default: "pending",
           enum: ["pending", "accepted", "rejected"]
         },
         message: String,

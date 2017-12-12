@@ -33,6 +33,10 @@ router.get("/:id", (req, res, next) => {
       }
     });
 });
+//  .populate({
+//       path: "user",
+//       model: "User"
+//     })
 
 router.post("/:id/flatmates", (req, res, next) => {
   const flatid = req.params.id;
@@ -40,14 +44,49 @@ router.post("/:id/flatmates", (req, res, next) => {
   Flat.findByIdAndUpdate(
     { _id: flatid },
     { $push: { flatmates: { user: req.user._id, message: req.body.message } } },
+    { new: true },
     (err, data) => {
       if (err) {
         return next(err);
       }
-      console.log("hello from backend", data);
       res.json(data);
     }
   );
+});
+
+router.put("/:flatid/flatmates/:userid/accept", (req, res, next) => {
+  const flatid = req.params.flatid;
+  const userid = req.params.userid;
+  Flat.findByIdAndUpdate(
+    { _id: flatid },
+    { $set: { flatmates: { user: userid, status: "accepted" } } },
+    { new: true },
+    (err, data) => {
+      if (err) {
+        return next(err);
+      }
+      res.json(data);
+    }
+  );
+});
+
+router.put("/:flatid/flatmates/:userid/reject", (req, res, next) => {
+  const flatID = req.params.flatid;
+  const userID = req.params.userid;
+  const rejected = "rejected";
+  Flat.findByIdAndUpdate(
+    { _id: flatID },
+    { $set: { flatmates: { user: userID, status: rejected } } },
+    { new: true },
+    (err, data) => {
+      if (err) {
+        return next(err);
+      }
+      res.json(data);
+      console.log(data);
+    }
+  );
+  console.log("fuck something is not working");
 });
 
 router.post("/add", (req, res, next) => {
@@ -64,7 +103,6 @@ router.post("/add", (req, res, next) => {
       res.json(err);
       return;
     }
-
     res.json({ message: "Flat added", id: newFlat._id });
   });
 });
