@@ -17,25 +17,23 @@ router.get("/", (req, res, next) => {
     res.json(data);
   });
 });
-/////////
+///////// help with populate
 router.get("/:id", (req, res, next) => {
   const flatid = req.params.id;
   Flat.findOne({ _id: `${flatid}` })
-    .populate({
-      path: "author",
-      model: "User"
-    })
+    .populate({ path: "author", model: "User" })
+    .populate("flatmates.user")
     .exec((err, data) => {
       if (err) {
         next(err);
       } else {
+        console.log(data);
         res.json(data);
       }
     });
 });
 //  .populate({
-//       path: "user",
-//       model: "User"
+//       path: "user"
 //     })
 
 router.post("/:id/flatmates", (req, res, next) => {
@@ -73,20 +71,17 @@ router.put("/:flatid/flatmates/:userid/accept", (req, res, next) => {
 router.put("/:flatid/flatmates/:userid/reject", (req, res, next) => {
   const flatID = req.params.flatid;
   const userID = req.params.userid;
-  const rejected = "rejected";
   Flat.findByIdAndUpdate(
     { _id: flatID },
-    { $set: { flatmates: { user: userID, status: rejected } } },
+    { $set: { flatmates: { user: userID, status: "rejected" } } },
     { new: true },
     (err, data) => {
       if (err) {
         return next(err);
       }
       res.json(data);
-      console.log(data);
     }
   );
-  console.log("fuck something is not working");
 });
 
 router.post("/add", (req, res, next) => {

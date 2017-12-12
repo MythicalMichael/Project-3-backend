@@ -54,15 +54,6 @@ you can access authors profile by clicking on him
 ##Flat logic
 there is should be expiring date on flats so and they should also disappear if flatmates array full \*only be visible for you at the top of the page if you are flatmate
 
-in page-flat-id html
-
-<h3>Flatmates</h3>
-<ul>
-  <li *ngFor="let flatmate of flat.flatmates">
-    <app-flat-flatmate [flat]="flat" [flatmate]="flatmate">
-  </li>
-</ul>
-
 in FlatFlatmatesComponent.ts
 
 @Input() flat; // with flat.\_id
