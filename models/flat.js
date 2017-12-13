@@ -12,8 +12,31 @@ const flatSchema = new Schema(
     mainPicture: String,
     sidePictures: [String],
     rooms: Number,
-    location: String,
+    flatLocation: {
+      location: {
+        latitude: String,
+        longitude: String
+      }
+    },
     description: String,
+    requested: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "User"
+      }
+    ],
+    acepptedFlatmates: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "User"
+      }
+    ],
+    declinedFlatmates: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "User"
+      }
+    ],
     flatmates: [
       {
         date: {

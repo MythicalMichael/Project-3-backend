@@ -5,6 +5,7 @@ const bcrypt = require("bcrypt");
 const response = require("../helpers/response");
 const Flat = require("../models/flat");
 const upload = require("../configs/multer");
+const mongoose = require("mongoose");
 
 const User = require("../models/user");
 
@@ -27,7 +28,6 @@ router.get("/:id", (req, res, next) => {
       if (err) {
         next(err);
       } else {
-        console.log(data);
         res.json(data);
       }
     });
@@ -41,7 +41,12 @@ router.post("/:id/flatmates", (req, res, next) => {
   // findOneAndUpdate or just findOne
   Flat.findByIdAndUpdate(
     { _id: flatid },
-    { $push: { flatmates: { user: req.user._id, message: req.body.message } } },
+    {
+      $push: { flatmates: { user: req.user._id, message: req.body.message } },
+      $push: {
+        requested: mongoose.Types.ObjectId(userid)
+      }
+    },
     { new: true },
     (err, data) => {
       if (err) {
@@ -55,9 +60,14 @@ router.post("/:id/flatmates", (req, res, next) => {
 router.put("/:flatid/flatmates/:userid/accept", (req, res, next) => {
   const flatid = req.params.flatid;
   const userid = req.params.userid;
-  Flat.findByIdAndUpdate(
+  Flat.findOneAndUpdate(
     { _id: flatid },
-    { $set: { flatmates: { user: userid, status: "accepted" } } },
+    {
+      $set: { flatmates: { user: userid, status: "accepted" } },
+      $push: {
+        acepptedFlatmates: mongoose.Types.ObjectId(userid)
+      }
+    },
     { new: true },
     (err, data) => {
       if (err) {
@@ -69,11 +79,16 @@ router.put("/:flatid/flatmates/:userid/accept", (req, res, next) => {
 });
 
 router.put("/:flatid/flatmates/:userid/reject", (req, res, next) => {
-  const flatID = req.params.flatid;
-  const userID = req.params.userid;
-  Flat.findByIdAndUpdate(
-    { _id: flatID },
-    { $set: { flatmates: { user: userID, status: "rejected" } } },
+  const flatid = req.params.flatid;
+  const userid = req.params.userid;
+  Flat.findOneAndUpdate(
+    { _id: flatid },
+    {
+      $set: { flatmates: { user: userid, status: "rejected" } },
+      $push: {
+        declinedFlatmates: mongoose.Types.ObjectId(userid)
+      }
+    },
     { new: true },
     (err, data) => {
       if (err) {
