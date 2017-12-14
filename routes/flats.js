@@ -18,7 +18,7 @@ router.get("/", (req, res, next) => {
     res.json(data);
   });
 });
-///////// help with populate
+
 router.get("/:id", (req, res, next) => {
   const flatid = req.params.id;
   Flat.findOne({ _id: `${flatid}` })
@@ -32,9 +32,6 @@ router.get("/:id", (req, res, next) => {
       }
     });
 });
-//  .populate({
-//       path: "user"
-//     })
 
 router.post("/:id/flatmates", (req, res, next) => {
   const flatid = req.params.id;
@@ -42,9 +39,8 @@ router.post("/:id/flatmates", (req, res, next) => {
   Flat.findByIdAndUpdate(
     { _id: flatid },
     {
-      $push: { flatmates: { user: req.user._id, message: req.body.message } },
       $push: {
-        requested: mongoose.Types.ObjectId(userid)
+        flatmates: { user: req.user._id, message: req.body.message }
       }
     },
     { new: true },
@@ -105,7 +101,8 @@ router.post("/add", (req, res, next) => {
     rooms: req.body.rooms,
     price: req.body.price,
     mainPicture: req.body.filename,
-    author: req.user
+    author: req.user,
+    flatLocation: req.body.flatLocation
   });
 
   newFlat.save(err => {

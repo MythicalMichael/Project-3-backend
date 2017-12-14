@@ -13,18 +13,10 @@ const flatSchema = new Schema(
     sidePictures: [String],
     rooms: Number,
     flatLocation: {
-      location: {
-        latitude: String,
-        longitude: String
-      }
+      location: Object,
+      url: String
     },
     description: String,
-    requested: [
-      {
-        type: Schema.Types.ObjectId,
-        ref: "User"
-      }
-    ],
     acepptedFlatmates: [
       {
         type: Schema.Types.ObjectId,
